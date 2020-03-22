@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - my_dbdata:/var/lib/postgresql/data
+    environment:
+        POSTGRES_DB: "rocket-test"
+        POSTGRES_PASSWORD: "test-pw"
+        POSTGRES_PORT: "5432"
+        POSTGRES_USER: "test-user"
+  web:
+    build: .
+    command: rocket-tests 
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+        ROCKET_DATABASES: '{my_test_db={url="postgres://test-user:test-pw@db:5432/rocket-test"}}'
+volumes:
+  my_dbdata:
